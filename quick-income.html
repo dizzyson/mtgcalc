@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Income Calculator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f4f6fa; --panel:#fff; --panel2:#fcfdff; --line:#e3e8f0; --line2:#eef2f8;
+  --ink:#16233b; --mut:#68758c; --acc:#1d5fd0; --acc-2:#eaf1fd; --accfg:#174db0;
+  --warn-bg:#fdf3e4; --warn-fg:#8a5a12; --bar:#16233b; --barfg:#fff;
+  --input-bg:#fff; --radius:10px; --shadow:0 1px 3px rgba(22,35,59,.06);
+}
+[data-theme="dark"]{
+  --bg:#0c1424; --panel:#121d33; --panel2:#15213a; --line:#243352; --line2:#1c2a47;
+  --ink:#e6ecf9; --mut:#7d8cab; --acc:#3d7bfa; --acc-2:#1a2c52; --accfg:#8fb2ff;
+  --warn-bg:#3a2c12; --warn-fg:#eec27a; --bar:#080d18; --barfg:#e6ecf9;
+  --input-bg:#0e1729; --shadow:0 1px 3px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:light}
+html[data-theme="dark"]{color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:0 0 92px;transition:background .2s}
+.wrap{max-width:980px;margin:0 auto;padding:18px 14px}
+header.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+header.top h1{font-size:19px;font-weight:750}
+header.top .sub{color:var(--mut);font-size:12px}
+.spacer{flex:1}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--acc);color:var(--accfg)}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+#sheet{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 22px;box-shadow:var(--shadow)}
+.sheet-title{display:none}
+.meta{display:grid;grid-template-columns:2fr 1fr 150px;gap:10px;margin-bottom:16px}
+@media(max-width:640px){.meta{grid-template-columns:1fr 1fr}}
+label.f{display:block;font-size:10.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+input,select{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px 9px;font:inherit;font-size:13px;background:var(--input-bg);color:var(--ink)}
+input:focus,select:focus{outline:2px solid var(--acc-2);border-color:var(--acc)}
+input[type=number]{text-align:right}
+.rec-card{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:14px;background:var(--panel2);overflow:hidden}
+.rec-head{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--acc-2);border-bottom:1px solid var(--line)}
+.rec-head .t{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--accfg)}
+.rec-head .rm{margin-left:auto}
+.rec-head .rm button{border:none;background:none;color:#c0554f;font-size:15px;cursor:pointer;padding:2px 6px}
+.rec-body{padding:12px}
+.frow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.frow>div{flex:1;min-width:120px}
+.frow>div.wide{flex:1.6;min-width:170px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 12px}
+.chip{background:var(--acc-2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12px}
+.chip b{font-variant-numeric:tabular-nums}
+.chip .cl{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.04em;display:block}
+.tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table.grid{width:100%;border-collapse:collapse;font-size:12.5px;min-width:780px}
+table.grid th{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);font-weight:700;text-align:right;padding:7px 8px;background:var(--panel);border-bottom:1px solid var(--line)}
+table.grid th:first-child{text-align:left}
+table.grid td{padding:4px 5px;border-bottom:1px solid var(--line2)}
+table.grid td:first-child{font-weight:650;white-space:nowrap;font-size:12px;padding-left:8px}
+table.grid input{padding:6px 7px;font-size:12.5px}
+table.grid select{padding:5px 3px;font-size:11px;width:100%}
+td.calc{text-align:right;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap;padding-right:8px}
+td.tot{text-align:right;font-variant-numeric:tabular-nums;color:var(--mut);white-space:nowrap;padding-right:8px}
+tr.used td{background:var(--acc-2);border-top:1px solid var(--line)}
+tr.method td{font-size:10.5px;color:var(--mut);padding-bottom:8px}
+tr.method td.calc{font-weight:600}
+.warns{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.warn{background:var(--warn-bg);color:var(--warn-fg);border-radius:7px;padding:7px 11px;font-size:12px}
+.infoline{margin-top:10px;font-size:11.5px;color:var(--mut)}
+.infoline b{color:var(--ink);font-variant-numeric:tabular-nums}
+.rec-sum{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:13px}
+.rec-sum b{font-size:15.5px}
+.section-h{display:flex;align-items:center;gap:8px;margin:18px 0 8px}
+.section-h h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.hint{font-size:11.5px;color:var(--mut);margin-top:4px}
+.oi-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.oi-row input.desc{flex:2}
+.oi-row input.amt{flex:1;max-width:140px}
+.oi-row label.gx{font-size:11.5px;color:var(--mut);display:flex;gap:4px;align-items:center;white-space:nowrap}
+.oi-row .mo{min-width:90px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.result-block{margin-top:18px;border-top:2px solid var(--ink);padding-top:10px}
+.res-line{display:flex;justify-content:space-between;padding:3px 0;font-size:13.5px}
+.res-line .nm{color:var(--mut)}
+.res-line.total{font-size:17px;font-weight:800;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+.res-line.total .nm{color:var(--ink)}
+.totalbar{position:fixed;left:0;right:0;bottom:0;background:var(--bar);color:var(--barfg);z-index:50;border-top:1px solid var(--line)}
+.totalbar .in{max-width:980px;margin:0 auto;padding:12px 14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.totalbar .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+.totalbar .amt{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.totalbar .ann{font-size:13px;opacity:.8}
+footer.note{max-width:980px;margin:10px auto 0;padding:0 14px;font-size:11px;color:var(--mut)}
+@media print{
+  body{background:#fff;padding:0}
+  .no-print,.totalbar,#suiteNav{display:none!important}
+  #sheet{border:none;padding:0;box-shadow:none}
+  .sheet-title{display:block;font-size:16px;font-weight:800;margin-bottom:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top no-print">
+    <div>
+      <h1>Quick Income Calculator</h1>
+      <div class="sub">Wage-earner worksheet method</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="btnTheme" onclick="toggleTheme()" title="Toggle dark mode">&#9789;</button>
+    <button class="btn" onclick="addJob()">+ Job</button>
+    <button class="btn" onclick="addOther()">+ Other</button>
+    <button class="btn" onclick="exportJPEG()" id="btnJpg">JPEG</button>
+    <button class="btn" onclick="exportPDF()" id="btnPdf">PDF</button>
+    <button class="btn primary" onclick="window.print()">Print</button>
+  </header>
+
+  <div id="sheet">
+    <div class="sheet-title">Wage Earner Income Calculator</div>
+    <div class="meta">
+      <div><label class="f">Borrower Name</label><input id="bname" placeholder="Borrower name" oninput="calc()"></div>
+      <div><label class="f">Loan Number</label><input id="loan" placeholder="Optional" oninput="calc()"></div>
+      <div><label class="f">Date</label><input id="pdate" type="date" oninput="calc()"></div>
+    </div>
+
+    <div id="jobs"></div>
+
+    <div class="section-h"><h2>Other Monthly Income</h2></div>
+    <div id="others"></div>
+    <div class="hint no-print">Award-letter monthly amount. Tick &ldquo;non-taxable&rdquo; to gross up 25%.</div>
+
+    <div class="result-block">
+      <div id="resLines"></div>
+      <div class="res-line total"><span class="nm">Total Monthly Qualifying Income</span><span id="resTotal">$0.00</span></div>
+      <div class="res-line"><span class="nm">Annualized</span><span id="resAnnual">$0.00</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="totalbar no-print">
+  <div class="in">
+    <span class="lbl">Monthly income</span>
+    <span class="amt" id="barTotal">$0.00</span>
+    <span class="ann" id="barAnnual">$0.00 / yr</span>
+  </div>
+</div>
+
+<footer class="note">Estimates for preliminary use only &mdash; final qualifying income is determined by underwriting. Method column follows the wage-earner worksheet: variable pay needs a 2-year history; the conservative average governs; un-reimbursed expenses are subtracted.</footer>
+
+<script>
+'use strict';
+/* ===== theme ===== */
+function applyTheme(t){ document.documentElement.setAttribute('data-theme', t);
+  const b=document.getElementById('btnTheme'); if(b) b.innerHTML = t==='dark' ? '&#9788;' : '&#9789;'; }
+function toggleTheme(){ applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+applyTheme(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+/* ===== helpers ===== */
+const N = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const fmt = v => (v<0?'-':'') + '$' + Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function pDate(s){ if(!s) return null; const p=String(s).split('-'); if(p.length!==3) return null;
+  const d=new Date(+p[0], +p[1]-1, +p[2]); return isNaN(d)?null:d; }
+const dim = d => new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
+/* Worksheet YTD months: (month-1) + day/daysInMonth; mid-year hire: months + days/30 */
+function ytdMonths(endStr, hireStr){
+  const e = pDate(endStr); if(!e) return 0;
+  const h = pDate(hireStr);
+  let mo;
+  if (h && h.getFullYear() === e.getFullYear())
+    mo = (e.getMonth() - h.getMonth()) + (e.getDate() - h.getDate())/30;
+  else
+    mo = e.getMonth() + e.getDate()/dim(e);
+  return Math.max(0.03, mo);
+}
+function monthlyFromFreq(freq, rate, hours){
+  switch(freq){
+    case 'Hourly':       return rate * (hours||0) * 52 / 12;
+    case 'Weekly':       return rate * 52 / 12;
+    case 'Bi-Weekly':    return rate * 26 / 12;
+    case 'Semi-Monthly': return rate * 24 / 12;
+    case 'Monthly':      return rate;
+    case 'Annually':     return rate / 12;
+    default:             return 0;
+  }
+}
+const FREQ = ['Hourly','Weekly','Bi-Weekly','Semi-Monthly','Monthly','Annually'];
+const COMPS = [['base','Base Pay'],['ot','Overtime'],['comm','Commission'],['bonus','Bonus'],['other','Other Income']];
+const M_LBL = {current:'Base Pay', ytd:'YTD', ytd12:'YTD + 12 Mos.', ytd24:'YTD + 24 Mos.',
+               need2:'Need 2 yrs', none:'—', custom:'Override'};
+
+/* ===== state ===== */
+let uid = 0;
+const S = { jobs:[], others:[] };
+function newJob(){ return { id:++uid, employer:'', consistent:true, freq:'Hourly', rate:0, hours:40,
+  hire:'', ytdThru:'',
+  y1:{base:0,ot:0,comm:0,bonus:0,other:0,unre:0}, y2:{base:0,ot:0,comm:0,bonus:0,other:0,unre:0},
+  y3:{base:0,ot:0,comm:0,bonus:0,other:0,unre:0},
+  m:{base:'auto',ot:'auto',comm:'auto',bonus:'auto',other:'auto'},
+  c:{base:0,ot:0,comm:0,bonus:0,other:0} }; }
+function newOther(){ return { id:++uid, desc:'', amt:0, gx:false }; }
+function addJob(){ S.jobs.push(newJob()); render(); }
+function addOther(){ S.others.push(newOther()); render(); }
+function delJob(id){ S.jobs = S.jobs.filter(j=>j.id!==id); render(); }
+function delOther(id){ S.others = S.others.filter(o=>o.id!==id); render(); }
+function set(id, path, val, num){
+  const j = S.jobs.find(x=>x.id===id) || S.others.find(x=>x.id===id); if(!j) return;
+  const p = path.split('.'); let o = j;
+  while(p.length>1) o = o[p.shift()];
+  o[p[0]] = num ? N(val) : val;
+  if (path==='freq' || path==='consistent' || path==='ytdThru' || path.startsWith('m.')) render(); else calc();
+}
+function setB(id, path, val){ const o=S.others.find(x=>x.id===id); if(o){o[path]=val; render();} }
+
+/* ===== worksheet math ===== */
+function calcJob(j){
+  const mo = ytdMonths(j.ytdThru, j.hire);
+  const monthlyBase = monthlyFromFreq(j.freq, N(j.rate), N(j.hours));
+  const out = {parts:{}, warns:[], monthlyBase, mo, total:0};
+  COMPS.forEach(([k])=>{
+    const a=N(j.y1[k]), b=N(j.y2[k]), c=N(j.y3[k]);
+    const ytd = mo ? a/mo : 0, m2 = b/12, m3 = c/12;
+    const a12 = (a+b)/((mo||0)+12), a24 = (a+b+c)/((mo||0)+24);
+    let rec, why='';
+    if (k==='base'){
+      /* consistent hours: base rate governs unless YTD runs lower */
+      if (!mo && monthlyBase>0) rec='current';
+      else if (j.consistent && monthlyBase>0){
+        rec = (ytd >= monthlyBase) ? 'current'
+            : (ytd<=m2 || !b) ? 'ytd' : (m2<=m3 ? 'ytd12' : 'ytd24');
+        if (ytd < monthlyBase && a>0)
+          out.warns.push('The year-to-date base is running below the base rate — the lower figure governs unless a satisfactory explanation is documented.');
+      } else {
+        rec = (ytd<=m2 || !b) ? 'ytd' : (m2<=m3 ? 'ytd12' : 'ytd24');
+      }
+    } else {
+      if (!a && !b && !c) rec='none';
+      else if (!a || !b || !c) rec='need2';
+      else rec = (ytd<=m2) ? 'ytd' : (m2<=m3 ? 'ytd12' : 'ytd24');
+    }
+    const mode = j.m[k]==='auto' ? rec : j.m[k];
+    let v = 0;
+    if (mode==='current') v = monthlyBase;
+    else if (mode==='ytd') v = ytd;
+    else if (mode==='ytd12') v = a12;
+    else if (mode==='ytd24') v = a24;
+    else if (mode==='custom') v = N(j.c[k]);
+    out.parts[k] = {v, rec, mode, ytd, a12, a24};
+    out.total += v;
+  });
+  /* variable-pay 2-year warnings, one per component */
+  [['ot','Overtime'],['comm','Commission'],['bonus','Bonus'],['other','Other income']].forEach(([k,lbl])=>{
+    const p = out.parts[k];
+    if (p.rec==='need2' && p.mode==='need2')
+      out.warns.push(lbl+': need a 2-year history to use this amount — excluded until documented (override the method to include it).');
+  });
+  /* un-reimbursed expenses: higher of most-recent-year and 24-mo average, subtracted */
+  const u2=N(j.y2.unre), u3=N(j.y3.unre), e2=u2/12, e3=u3/12;
+  let unre=0, unreLbl='—';
+  if (u2||u3){
+    if (!u2){ unre=e3; unreLbl='Most Recent Year'; }
+    else if (e3>=e2){ unre=(u2+u3)/24; unreLbl='Average'; }
+    else { unre=e2; unreLbl='Most Recent Year'; }
+  }
+  out.unre = unre; out.unreLbl = unreLbl;
+  out.total -= unre;
+  /* info-only comparison: total YTD-only vs amount used */
+  const ytdOnly = ['base','ot','comm','bonus','other'].reduce((s,k)=>s+out.parts[k].ytd,0) - unre;
+  out.ytdOnly = ytdOnly;
+  const y2tot = COMPS.reduce((s,[k])=>s+N(j.y2[k]),0), y3tot = COMPS.reduce((s,[k])=>s+N(j.y3[k]),0);
+  out.ytd12All = y2tot ? ['base','ot','comm','bonus','other'].reduce((s,k)=>s+out.parts[k].a12,0) - unre : null;
+  out.ytd24All = (y2tot&&y3tot) ? ['base','ot','comm','bonus','other'].reduce((s,k)=>s+out.parts[k].a24,0) - unre : null;
+  if (mo && ytdOnly>0 && out.total>0){
+    const diff = out.total/ytdOnly - 1;
+    if (diff > 0.05)
+      out.warns.push('The amount used is more than 5% above the straight YTD average — be prepared to document why.');
+  }
+  out.warns = out.warns.filter(Boolean);
+  return out;
+}
+function calcOther(o){ return N(o.amt) * (o.gx ? 1.25 : 1); }
+
+/* ===== render ===== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function yrLabels(j){
+  const e = pDate(j.ytdThru);
+  const y1 = e ? e.getFullYear() : new Date().getFullYear();
+  return [y1+' YTD', String(y1-1), String(y1-2)];
+}
+function methodSel(j,k,p){
+  const opts = [['auto','Auto'],['ytd','YTD'],['ytd12','YTD + 12'],['ytd24','YTD + 24'],['custom','Override $'],['none','Exclude']];
+  if (k==='base') opts.splice(1,0,['current','Base Pay']);
+  return `<select onchange="set(${j.id},'m.${k}',this.value)">` +
+    opts.map(([v,l])=>`<option value="${v}" ${j.m[k]===v?'selected':''}>${v==='auto'?`Auto — ${M_LBL[p.rec]||''}`:l}</option>`).join('') +
+    '</select>' +
+    (j.m[k]==='custom'?`<input type="number" step="0.01" style="margin-top:3px" value="${N(j.c[k])||''}" placeholder="$/mo" oninput="set(${j.id},'c.${k}',this.value,1)">`:'');
+}
+function jobCard(j,i){
+  const r = calcJob(j);
+  const [l1,l2,l3] = yrLabels(j);
+  const yearRow = (yy,label) => {
+    const t = COMPS.reduce((s,[k])=>s+N(j[yy][k]),0) - (yy==='y1'?0:N(j[yy].unre));
+    return `<tr><td>${label}</td>` +
+      COMPS.map(([k])=>`<td><input type="number" step="0.01" value="${N(j[yy][k])||''}" placeholder="0" oninput="set(${j.id},'${yy}.${k}',this.value,1)"></td>`).join('') +
+      `<td>${yy==='y1'?'<span style="color:var(--mut);font-size:11px;padding-left:6px">N/A</span>':`<input type="number" step="0.01" value="${N(j[yy].unre)||''}" placeholder="0" oninput="set(${j.id},'${yy}.unre',this.value,1)">`}</td>` +
+      `<td class="tot">${fmt(t)}</td></tr>`;
+  };
+  return `<div class="rec-card">
+    <div class="rec-head">
+      <span class="t">Employment Record #${i+1}</span>
+      <span style="font-size:12px;color:var(--mut)">${esc(j.employer)}</span>
+      <span class="rm no-print"><button title="Remove" onclick="delJob(${j.id})">&#10005;</button></span>
+    </div>
+    <div class="rec-body">
+      <div class="frow">
+        <div class="wide"><label class="f">Employer Name</label><input value="${esc(j.employer)}" placeholder="Employer" oninput="set(${j.id},'employer',this.value)"></div>
+        <div><label class="f">Type of Income</label><select onchange="set(${j.id},'consistent',this.value==='1')">
+          <option value="1" ${j.consistent?'selected':''}>Consistent Hours</option>
+          <option value="0" ${!j.consistent?'selected':''}>Irregular Hours</option></select></div>
+        <div><label class="f">Frequency</label><select onchange="set(${j.id},'freq',this.value)">${FREQ.map(f=>`<option ${j.freq===f?'selected':''}>${f}</option>`).join('')}</select></div>
+        <div><label class="f">Amount</label><input type="number" step="0.01" value="${N(j.rate)||''}" placeholder="0.00" oninput="set(${j.id},'rate',this.value,1)"></div>
+        ${j.freq==='Hourly'?`<div><label class="f">Weekly Hours</label><input type="number" step="0.5" value="${N(j.hours)||''}" oninput="set(${j.id},'hours',this.value,1)"></div>`:''}
+        <div><label class="f">Hire Date</label><input type="date" value="${esc(j.hire)}" onchange="set(${j.id},'hire',this.value)"></div>
+        <div><label class="f">Pay Period End</label><input type="date" value="${esc(j.ytdThru)}" onchange="set(${j.id},'ytdThru',this.value)"></div>
+      </div>
+      <div class="chips">
+        <span class="chip"><span class="cl">Monthly Amount</span><b>${fmt(r.monthlyBase)}</b></span>
+        <span class="chip"><span class="cl">Annual Amount</span><b>${fmt(r.monthlyBase*12)}</b></span>
+        <span class="chip"><span class="cl">Monthly YTD</span><b>${r.mo?fmt(r.parts.base.ytd):'N/A'}</b></span>
+        <span class="chip"><span class="cl">YTD Months</span><b>${r.mo?r.mo.toFixed(2):'N/A'}</b></span>
+      </div>
+      <div class="tbl-scroll"><table class="grid">
+        <thead><tr><th>Year</th><th>Base Pay / YTD</th><th>Overtime</th><th>Commission</th><th>Bonus</th><th>Other Income</th><th>Un-Reimb. Exp.</th><th>Total</th></tr></thead>
+        <tbody>
+          ${yearRow('y1',l1)}${yearRow('y2',l2)}${yearRow('y3',l3)}
+          <tr class="used"><td>Amount Used</td>${COMPS.map(([k])=>`<td class="calc">${fmt(r.parts[k].v)}</td>`).join('')}<td class="calc">&minus;${fmt(r.unre)}</td><td class="calc">${fmt(r.total)}</td></tr>
+          <tr class="method"><td>Method</td>${COMPS.map(([k])=>`<td>${methodSel(j,k,r.parts[k])}</td>`).join('')}<td class="calc">${r.unreLbl}</td><td class="calc">/ month</td></tr>
+        </tbody>
+      </table></div>
+      <div class="warns">${r.warns.map(w=>`<div class="warn">${w}</div>`).join('')}</div>
+      <div class="infoline">For information only &mdash; monthly by method: Base <b>${fmt(r.monthlyBase)}</b> &middot; YTD <b>${r.mo?fmt(r.ytdOnly):'N/A'}</b> &middot; YTD + 12 <b>${r.ytd12All===null?'N/A':fmt(r.ytd12All)}</b> &middot; YTD + 24 <b>${r.ytd24All===null?'N/A':fmt(r.ytd24All)}</b></div>
+      <div class="rec-sum"><span>${esc(j.employer)||'Employment #'+(i+1)} &mdash; income used</span><b>${fmt(r.total)} / mo</b></div>
+    </div>
+  </div>`;
+}
+function otherRow(o){
+  return `<div class="oi-row">
+    <input class="desc" value="${esc(o.desc)}" placeholder="e.g. Social Security" oninput="set(${o.id},'desc',this.value)">
+    <input class="amt" type="number" step="0.01" value="${N(o.amt)||''}" placeholder="$/mo" oninput="set(${o.id},'amt',this.value,1)">
+    <label class="gx"><input type="checkbox" style="width:auto" ${o.gx?'checked':''} onchange="setB(${o.id},'gx',this.checked)"> non-taxable &times;1.25</label>
+    <span class="mo">${fmt(calcOther(o))}</span>
+    <span class="rm no-print"><button title="Remove" onclick="delOther(${o.id})" style="border:none;background:none;color:#c0554f;cursor:pointer">&#10005;</button></span>
+  </div>`;
+}
+function render(){
+  $('jobs').innerHTML = S.jobs.map(jobCard).join('') || '<div class="hint">No employment yet &mdash; click <b>+ Job</b>.</div>';
+  $('others').innerHTML = S.others.map(otherRow).join('') || '<div class="hint">None.</div>';
+  calc();
+}
+function calc(){
+  let total = 0; const lines = [];
+  S.jobs.forEach((j,i)=>{ const r=calcJob(j); total += r.total;
+    lines.push([`${esc(j.employer)||'Employment #'+(i+1)}`, r.total]); });
+  S.others.forEach(o=>{ const v=calcOther(o); total += v;
+    lines.push([`${esc(o.desc)||'Other income'}${o.gx?' (grossed up)':''}`, v]); });
+  $('resLines').innerHTML = lines.map(([n,v])=>`<div class="res-line"><span class="nm">${n}</span><span>${fmt(v)}</span></div>`).join('');
+  $('resTotal').textContent = fmt(total);
+  $('resAnnual').textContent = fmt(total*12);
+  $('barTotal').textContent = fmt(total);
+  $('barAnnual').textContent = fmt(total*12) + ' / yr';
+  /* live-update computed cells without stealing focus */
+  document.querySelectorAll('#jobs .rec-card').forEach((el,idx)=>{
+    const j=S.jobs[idx]; if(!j) return; const r=calcJob(j);
+    const used = el.querySelectorAll('tr.used td.calc');
+    COMPS.forEach(([k],ci)=>{ if(used[ci]) used[ci].textContent = fmt(r.parts[k].v); });
+    if(used[5]) used[5].innerHTML = '&minus;'+fmt(r.unre);
+    if(used[6]) used[6].textContent = fmt(r.total);
+    const sum = el.querySelector('.rec-sum b'); if(sum) sum.textContent = fmt(r.total)+' / mo';
+    const tots = el.querySelectorAll('tbody tr td.tot');
+    ['y1','y2','y3'].forEach((yy,ri)=>{ if(tots[ri]){
+      const t = COMPS.reduce((s,[k])=>s+N(j[yy][k]),0) - (yy==='y1'?0:N(j[yy].unre));
+      tots[ri].textContent = fmt(t); }});
+    const chips = el.querySelectorAll('.chip b');
+    if(chips[0]) chips[0].textContent = fmt(r.monthlyBase);
+    if(chips[1]) chips[1].textContent = fmt(r.monthlyBase*12);
+    if(chips[2]) chips[2].textContent = r.mo?fmt(r.parts.base.ytd):'N/A';
+    if(chips[3]) chips[3].textContent = r.mo?r.mo.toFixed(2):'N/A';
+    /* keep Auto method labels, un-reimb label, warnings and info line live */
+    const msels = el.querySelectorAll('tr.method select');
+    COMPS.forEach(([k],ci)=>{ if(msels[ci] && msels[ci].options.length)
+      msels[ci].options[0].text = 'Auto — ' + (M_LBL[r.parts[k].rec]||'—'); });
+    const mcells = el.querySelectorAll('tr.method td.calc');
+    if(mcells[0]) mcells[0].textContent = r.unreLbl;
+    const wbox = el.querySelector('.warns');
+    if(wbox) wbox.innerHTML = r.warns.map(w=>`<div class="warn">${w}</div>`).join('');
+    const info = el.querySelectorAll('.infoline b');
+    if(info[0]) info[0].textContent = fmt(r.monthlyBase);
+    if(info[1]) info[1].textContent = r.mo?fmt(r.ytdOnly):'N/A';
+    if(info[2]) info[2].textContent = r.ytd12All===null?'N/A':fmt(r.ytd12All);
+    if(info[3]) info[3].textContent = r.ytd24All===null?'N/A':fmt(r.ytd24All);
+  });
+}
+
+/* ===== export (always exports in light theme for clean documents) ===== */
+async function snap(){
+  const prev = document.documentElement.getAttribute('data-theme');
+  applyTheme('light');
+  await new Promise(r=>setTimeout(r,60));
+  try{
+    return await html2canvas($('sheet'), {scale:2, backgroundColor:'#ffffff', useCORS:true,
+      ignoreElements: n => n.classList && (n.classList.contains('no-print') || n.id==='suiteNav')});
+  } finally { applyTheme(prev); }
+}
+function fname(ext){
+  const b = ($('bname').value||'borrower').trim().replace(/[^\w\- ]+/g,'').replace(/\s+/g,'_');
+  return `income_${b}_${new Date().toISOString().slice(0,10)}.${ext}`;
+}
+async function exportJPEG(){
+  const btn=$('btnJpg'); btn.disabled=true; btn.textContent='...';
+  try{
+    const canvas = await snap();
+    const a = document.createElement('a');
+    a.download = fname('jpg');
+    a.href = canvas.toDataURL('image/jpeg', 0.92);
+    a.click();
+  } finally { btn.disabled=false; btn.textContent='JPEG'; }
+}
+async function exportPDF(){
+  const btn=$('btnPdf'); btn.disabled=true; btn.textContent='...';
+  try{
+    const canvas = await snap();
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({unit:'pt', format:'letter'});
+    const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+    const margin = 36, iw = pw - margin*2;
+    const ih = canvas.height * iw / canvas.width;
+    if (ih <= ph - margin*2){
+      pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',margin,margin,iw,ih);
+    } else {
+      const pageHpx = Math.floor((ph - margin*2) * canvas.width / iw);
+      let y = 0, first = true;
+      while (y < canvas.height){
+        const h = Math.min(pageHpx, canvas.height - y);
+        const c2 = document.createElement('canvas');
+        c2.width = canvas.width; c2.height = h;
+        c2.getContext('2d').drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
+        if (!first) pdf.addPage();
+        pdf.addImage(c2.toDataURL('image/jpeg',0.95),'JPEG',margin,margin,iw, h * iw / canvas.width);
+        first = false; y += h;
+      }
+    }
+    pdf.save(fname('pdf'));
+  } finally { btn.disabled=false; btn.textContent='PDF'; }
+}
+
+/* ===== init ===== */
+(function(){
+  try{ $('pdate').value = new Date().toISOString().slice(0,10); }catch(e){}
+  S.jobs.push(newJob());
+  render();
+})();
+</script>
+<style id="suiteNavCss">
+#suiteNav{position:fixed;right:14px;bottom:78px;z-index:99999;display:flex;gap:2px;align-items:center;
+  background:rgba(20,30,50,.92);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:5px 8px;
+  font:600 11.5px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  box-shadow:0 4px 16px rgba(0,0,0,.25)}
+#suiteNav a,#suiteNav .sn-cur{color:#cfd9ea;text-decoration:none;padding:6px 9px;border-radius:99px;white-space:nowrap}
+#suiteNav a:hover{background:rgba(255,255,255,.14);color:#fff}
+#suiteNav .sn-cur{background:#1d5fd0;color:#fff}
+@media print{#suiteNav{display:none!important}}
+@media(max-width:700px){#suiteNav{right:8px;bottom:64px;padding:4px 6px}#suiteNav a,#suiteNav .sn-cur{padding:5px 6px;font-size:10.5px}}
+</style>
+<div id="suiteNav" class="no-print"><a href="index.html">Home</a><span class="sn-cur">1 &middot; Quick</span><a href="income-calculator.html">2 &middot; Income</a><a href="renovation-suite.html">3 &middot; Reno</a><a href="all-in-one.html">4 &middot; All-in-One</a></div>
+</body>
+</html>

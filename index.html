@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgage Suite</title>
+<style>
+:root{
+  --bg0:#080d18; --bg1:#0c1424; --panel:rgba(19,30,51,.72); --line:rgba(120,150,200,.16);
+  --ink:#e8eefb; --mut:#7d8cab; --acc:#3d7bfa; --acc-glow:rgba(61,123,250,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:
+    radial-gradient(900px 500px at 80% -10%, rgba(61,123,250,.16), transparent 60%),
+    radial-gradient(700px 500px at 10% 110%, rgba(90,60,220,.12), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+  color:var(--ink);
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  padding:32px 18px;
+}
+main{width:100%;max-width:430px;text-align:center}
+.mark{
+  width:46px;height:46px;margin:0 auto 18px;border-radius:14px;
+  background:linear-gradient(140deg,#3d7bfa,#7b5cf5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;color:#fff;letter-spacing:-.03em;
+  box-shadow:0 8px 30px var(--acc-glow);
+}
+h1{font-size:26px;font-weight:750;letter-spacing:-.02em;margin-bottom:4px}
+.sub{color:var(--mut);font-size:13px;margin-bottom:34px}
+nav{display:flex;flex-direction:column;gap:12px}
+a.tool{
+  display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:17px 20px;font-size:15.5px;font-weight:650;letter-spacing:-.01em;
+  backdrop-filter:blur(8px);
+  transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease;
+}
+a.tool:hover{transform:translateY(-2px);border-color:rgba(61,123,250,.55);box-shadow:0 8px 32px rgba(61,123,250,.18)}
+a.tool .n{
+  width:28px;height:28px;flex:0 0 28px;border-radius:9px;font-size:13px;font-weight:800;
+  background:rgba(61,123,250,.14);color:#7fa8ff;border:1px solid rgba(61,123,250,.3);
+  display:flex;align-items:center;justify-content:center;
+}
+a.tool .arrow{margin-left:auto;color:var(--mut);transition:transform .14s ease,color .14s ease}
+a.tool:hover .arrow{transform:translateX(3px);color:#7fa8ff}
+footer{margin-top:34px;color:var(--mut);font-size:11px;opacity:.75}
+@media(max-width:420px){a.tool{padding:15px 16px;font-size:14.5px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="mark">M</div>
+  <h1>Mortgage Suite</h1>
+  <div class="sub">Pick a tool</div>
+  <nav>
+    <a class="tool" href="quick-income.html"><span class="n">1</span>Quick Income Calculator<span class="arrow">&rarr;</span></a>
+    <a class="tool" href="income-calculator.html"><span class="n">2</span>Income Calc &amp; Guideline Engine<span class="arrow">&rarr;</span></a>
+    <a class="tool" href="renovation-suite.html"><span class="n">3</span>Renovation Suite<span class="arrow">&rarr;</span></a>
+    <a class="tool" href="all-in-one.html"><span class="n">4</span>All in One<span class="arrow">&rarr;</span></a>
+  </nav>
+  <footer>Estimates only &mdash; final terms determined by underwriting.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,238 @@
+/* =====================================================================
+   RENOVATION SUITE SKIN
+   Modelled on the 203(k) calculator reference: near-black panels, a
+   periwinkle label colour for every section heading, a purple programme
+   pill, a green pass banner, and a rail where the label is quiet and the
+   figure is loud. Scoped to #suite-root so the calculator is untouched.
+   ===================================================================== */
+
+#suite-root{
+  --rn-blue:#6B93F0;      /* section labels, emphasis lines            */
+  --rn-blue-2:#8FB2FF;
+  --rn-purple:#C4A7F5;    /* programme pill                            */
+  --rn-purple-bg:#372A5B;
+  --rn-green:#4ADE80;     /* pass banner, header meta                  */
+  --rn-green-bg:#10281C;
+  --rn-green-line:#1F5636;
+  --rn-amber:#F0B849;
+  --rn-red:#F27381;
+}
+
+/* ---------- dark and navy: the reference itself --------------------- */
+[data-theme="dark"] #suite-root{
+  --bg:#0C0E13; --bg-2:#0F1218;
+  --panel:#13161E; --panel-2:#171B24;
+  --ink:#F2F4F8; --ink-2:#D3D8E2; --muted:#8A93A5;
+  --line:#242935; --line-2:#1C212B;
+  --input-bg:#191D26; --input-line:#2A303C; --input-ink:#F2F4F8; --input-focus:#6B93F0;
+  --calc-bg:#161B26; --calc-line:#273041; --calc-ink:#B9CCF3;
+  --accent:#6B93F0; --accent-2:#8FB2FF; --accent-ink:#0A0D13;
+  --subhead-bg:transparent; --subhead-line:transparent; --subhead-ink:#6B93F0;
+  --major-1:#13161E; --major-2:#13161E; --major-ink:#F2F4F8; --major-sub:#8A93A5;
+  --radius:14px; --radius-sm:9px;
+}
+html[data-skin="navy"] #suite-root{
+  --bg:#0A1526; --bg-2:#0C1B30;
+  --panel:#102037; --panel-2:#142842;
+  --ink:#FFFFFF; --ink-2:#E6EEFA; --muted:#9FB6D4;
+  --line:#1D3A5E; --line-2:#16304E;
+  --input-bg:#132C4A; --input-line:#27507D; --input-ink:#FFFFFF;
+  --calc-bg:#132C4A; --calc-line:#27507D; --calc-ink:#CFE2FF;
+  --major-1:#102037; --major-2:#102037;
+}
+[data-theme="dark"] #suite-root,
+html[data-skin="navy"] #suite-root{
+  background:var(--bg) !important;
+}
+
+/* ---------- light: the same structure, inverted --------------------- */
+html[data-skin="light"] #suite-root{
+  --rn-blue:#2C5BD6; --rn-blue-2:#1E45AB;
+  --rn-purple:#5B34A8; --rn-purple-bg:#EFE8FC;
+  --rn-green:#0F7A42; --rn-green-bg:#E8F7EE; --rn-green-line:#A9DCBE;
+  --rn-amber:#8A5406; --rn-red:#B02334;
+  --radius:14px; --radius-sm:9px;
+}
+
+/* ---------- cards ---------------------------------------------------- */
+#suite-root .card.lvl-major{
+  background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); overflow:hidden;
+}
+#suite-root .card.lvl-major>h3{
+  background:transparent; border-bottom:1px solid var(--line);
+  padding:14px 18px; display:flex; align-items:center; gap:10px;
+  font-size:15px; font-weight:800; color:var(--ink); letter-spacing:-.015em;
+}
+#suite-root .card.lvl-major>h3 .chev{ color:var(--muted); font-size:11px }
+#suite-root .card.lvl-major>h3 .ttl{ flex:1 }
+#suite-root .card.lvl-major>h3 .sum{
+  font-family:var(--font-num); font-weight:800; font-size:15px;
+  color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:-.02em;
+}
+#suite-root .card .body{ padding:18px }
+#suite-root .card.lvl-sub{
+  background:var(--panel-2); border:1px solid var(--line);
+  border-radius:var(--radius-sm); margin-top:12px;
+}
+#suite-root .card.lvl-sub>h3{
+  padding:11px 14px; font-size:13px; font-weight:700; color:var(--ink-2);
+  border-bottom:1px solid var(--line);
+}
+#suite-root .card.lvl-sub.closed>h3{ border-bottom-color:transparent }
+
+/* The programme pill, top right of a card and of the rail. The one in the
+   brand bar sits on a dark gradient and already reads correctly, so it is
+   left alone. */
+#suite-root .card>h3 .badge,#suite-root .card>h3 .badge.on,
+#suite-root .rail .badge,#suite-root .rail .badge.on{
+  background:var(--rn-purple-bg); color:var(--rn-purple);
+  border:none; border-radius:7px; padding:4px 10px;
+  font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+}
+
+/* the descriptive paragraph under a heading */
+#suite-root .blurb,#suite-root .sub,#suite-root .muted,#suite-root .note{
+  color:var(--muted); font-size:12.5px; line-height:1.6;
+}
+#suite-root .blurb b,#suite-root .note b{ color:var(--ink-2); font-weight:700 }
+
+/* ---------- section labels — the periwinkle rule -------------------- */
+#suite-root .coltitle,#suite-root .sec-head{
+  color:var(--rn-blue) !important; background:transparent !important;
+  border:none !important; padding:0 0 9px 0 !important; margin:0 0 4px 0;
+  font-size:10.5px; font-weight:800; letter-spacing:.13em; text-transform:uppercase;
+}
+#suite-root .sec-head{ margin-top:18px }
+#suite-root .colbox{
+  background:transparent; border:none; padding:0; margin:0 0 4px 0;
+}
+#suite-root .colgroup{ gap:26px }
+
+/* ---------- fields --------------------------------------------------- */
+#suite-root .row{ margin-bottom:14px }
+/* The reference sets field labels in sentence case at reading size, not as
+   letterspaced small caps. The suite's own rule is more specific, so this
+   one has to be too. */
+#suite-root .row>label,#suite-root .colbox .row>label,#suite-root .card .row>label{
+  display:block !important; color:var(--muted) !important;
+  font-size:12.5px !important; font-weight:500 !important;
+  margin-bottom:6px !important; letter-spacing:0 !important;
+  text-transform:none !important;
+}
+#suite-root input.f,#suite-root select.f,#suite-root textarea.f,
+#suite-root input[type="number"],#suite-root input[type="text"],#suite-root select{
+  width:100%; background:var(--input-bg); border:1px solid var(--input-line);
+  color:var(--input-ink); border-radius:var(--radius-sm);
+  padding:11px 13px; font-size:14.5px; font-weight:500;
+  font-family:var(--font-num); font-variant-numeric:tabular-nums;
+  transition:border-color .12s, box-shadow .12s;
+}
+#suite-root select,#suite-root select.f{ font-family:var(--font-ui); font-weight:600 }
+#suite-root input.f:focus,#suite-root select.f:focus,#suite-root select:focus{
+  outline:none; border-color:var(--rn-blue); box-shadow:0 0 0 3px rgba(107,147,240,.18);
+}
+#suite-root input.f:hover{ border-color:var(--line-2) }
+
+/* ---------- the live summary rail ------------------------------------ */
+#suite-root .rail .card.lvl-major{ background:var(--panel) }
+#suite-root .rail .out{
+  display:flex; align-items:baseline; gap:12px;
+  padding:7px 0; border:none; background:transparent;
+}
+#suite-root .rail .out:hover{ background:transparent }
+#suite-root .rail .out .l{
+  color:var(--ink-2); font-size:13.5px; font-weight:500; flex:1;
+}
+#suite-root .rail .out .v{
+  font-family:var(--font-num); font-variant-numeric:tabular-nums;
+  font-size:14.5px; font-weight:800; color:var(--ink);
+  letter-spacing:-.02em; text-align:right; white-space:nowrap;
+}
+/* The answer lines. The reference states these in blue on the same surface
+   rather than in a filled block, so the eye reads the column as one list
+   with three loud entries instead of three separate objects. */
+#suite-root .rail .out.final,#suite-root .rail .out.hero,
+#suite-root .out.final,#suite-root .out.hero{
+  background:transparent !important; background-image:none !important;
+  border:none !important; border-top:1px solid var(--line) !important;
+  border-radius:0 !important; margin-top:8px; padding:12px 0 6px !important;
+  box-shadow:none !important;
+}
+#suite-root .rail .out.final .l,#suite-root .rail .out.hero .l,
+#suite-root .out.final .l,#suite-root .out.hero .l{
+  color:var(--rn-blue) !important; font-weight:800; font-size:15px;
+  text-transform:none; letter-spacing:-.01em;
+}
+#suite-root .rail .out.final .v,#suite-root .rail .out.hero .v,
+#suite-root .out.final .v,#suite-root .out.hero .v{
+  color:var(--rn-blue) !important; font-weight:800; font-size:19px; letter-spacing:-.03em;
+}
+/* the softer supporting states keep their meaning but lose the fill */
+#suite-root .rail .out.pass{ background:transparent !important; border:none !important; padding:7px 0 !important }
+#suite-root .rail .out.pass .v{ color:var(--rn-green) !important; font-weight:700 }
+#suite-root .rail .out.muted .v,#suite-root .rail .out.na .v{ color:var(--muted) !important; font-weight:600 }
+#suite-root .rail .out.na{ background:transparent !important; border:none !important; padding:7px 0 !important }
+
+/* ---------- status banners ------------------------------------------- */
+#suite-root .statuspill{
+  display:flex; align-items:flex-start; gap:9px;
+  border-radius:var(--radius-sm); padding:11px 13px; margin-bottom:14px;
+  font-size:13.5px; font-weight:700; line-height:1.45; border:1px solid;
+}
+#suite-root .statuspill.pass,#suite-root .statuspill.on{
+  background:var(--rn-green-bg); border-color:var(--rn-green-line); color:var(--rn-green);
+}
+#suite-root .statuspill.warn{ background:#2E2412; border-color:#6A5217; color:var(--rn-amber) }
+#suite-root .statuspill.off,#suite-root .statuspill.na{
+  background:var(--panel-2); border-color:var(--line); color:var(--muted); font-weight:600;
+}
+#suite-root .statuspill.bad{ background:#2E161C; border-color:#6D2733; color:var(--rn-red) }
+html[data-skin="light"] #suite-root .statuspill.warn{ background:#FFF7E6; border-color:#F0D293; color:var(--rn-amber) }
+html[data-skin="light"] #suite-root .statuspill.bad{ background:#FDECEF; border-color:#F0BDC5; color:var(--rn-red) }
+
+/* the green meta on the right of a card heading */
+#suite-root .card.lvl-major>h3 .sum.pass,#suite-root .card>h3 .meta{
+  color:var(--rn-green); font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+}
+
+/* ---------- tables and totals ---------------------------------------- */
+#suite-root table{ font-size:13px }
+#suite-root table th{
+  color:var(--rn-blue); background:transparent; border-color:var(--line);
+  font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; font-weight:800;
+}
+#suite-root table td{
+  border-color:var(--line); color:var(--ink-2);
+  font-family:var(--font-num); font-variant-numeric:tabular-nums;
+}
+#suite-root table td:first-child{ font-family:var(--font-ui); color:var(--ink-2) }
+#suite-root .final{ color:var(--rn-blue) }
+
+#suite-root .legend{ color:var(--muted); font-size:11.5px }
+/* The brand bar owns its own ink in both themes — weight and tracking only. */
+#suite-root .topbar h1{ font-weight:800; letter-spacing:-.02em }
+
+/* ---------- in-page tab strip ---------------------------------------- */
+.los-strip{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; gap:4px; flex-wrap:nowrap; overflow-x:auto;
+  padding:9px 2px; margin-bottom:14px;
+  background:var(--bg,var(--surface)); border-bottom:1px solid var(--line);
+  scrollbar-width:thin;
+}
+#suite-root .los-strip{ background:var(--bg) }
+.los-strip::-webkit-scrollbar{ height:5px }
+.los-strip::-webkit-scrollbar-thumb{ background:var(--line-2,var(--line)); border-radius:3px }
+.los-strip .st{
+  flex:none; padding:7px 13px; border-radius:8px; font-size:12.5px; font-weight:700;
+  color:var(--muted,var(--text-muted)); background:transparent; border:1px solid transparent;
+  cursor:pointer; white-space:nowrap; font-family:var(--font-ui);
+}
+.los-strip .st:hover{ color:var(--ink,var(--text)); background:var(--panel-2,var(--surface-3)) }
+.los-strip .st.on{
+  color:#6B93F0; background:rgba(107,147,240,.13); border-color:rgba(107,147,240,.34);
+}
+html[data-skin="light"] .los-strip .st.on{ color:#2C5BD6; background:#EAF0FE; border-color:#BCD0F7 }
+.los-strip .spacer{ flex:1 }
+.los-strip .st.wide{ font-weight:800; letter-spacing:.06em; text-transform:uppercase; font-size:10.5px }

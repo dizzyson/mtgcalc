@@ -1,0 +1,216 @@
+/* =====================================================================
+   LOS PATCH LAYER — presentation only
+   Nothing here changes a calculation. It restyles both applications,
+   adds a third theme, and replaces the two horizontal tab strips with
+   one named left navigation that carries subtabs.
+   ===================================================================== */
+
+/* ---------- 1. TYPE ------------------------------------------------- */
+:root{
+  --font-ui:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-num:'Manrope',ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-code:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --los-w:236px;
+}
+body,#suite-root,#suite-root *,.panel,.card,input,select,textarea,button{
+  font-family:var(--font-ui);
+}
+/* Money and every other figure: geometric, tabular, tight. */
+.n,.v,.kpi b,.money,.tot,.amt,
+input.cell-input,input.n,td.n,th.n,
+#suite-root .n,#suite-root .v,#suite-root b,#suite-root .kpi b,
+.summary td,.summary th,
+#hdrIncome,#hdrB1,#hdrB2,#hdrFront,#hdrBack{
+  font-family:var(--font-num) !important;
+  font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:'tnum' 1,'lnum' 1,'ss01' 1;
+  letter-spacing:-.014em;
+}
+code,kbd,.mono,.msgid{font-family:var(--font-code)}
+h1,h2,h3,h4{letter-spacing:-.018em}
+
+/* ---------- 2. NAVY SKIN (dark blue, white type) -------------------- */
+/* Rides on top of data-theme="dark" so every existing dark rule still
+   applies; only the token values change. */
+html[data-skin="navy"]{
+  --bg:#0B1B33; --surface:#12294A; --surface-2:#173254; --surface-3:#1C3A61;
+  --line:#22456F; --line-2:#2C5586;
+  --text:#FFFFFF; --text-strong:#FFFFFF; --text-muted:#B8CBE4;
+  --input-bg:#123A5E; --input-line:#2E6491; --input-ink:#FFFFFF;
+  --input-focus:#7FC2FF; --input-focus-bg:#164367;
+  --bar-bg:linear-gradient(135deg,#071627,#0E2A4B); --bar-line:#1D3F68; --bar-tile:rgba(255,255,255,.10);
+  --thead:#0E2A4B; --thead-text:#FFFFFF;
+  --tag-bg:#17355A; --tag-text:#CFE4FF;
+  --total-bg:#153A63; --total-text:#FFFFFF; --total-line:#2A5586;
+  --accent:#4EA3FF; --accent-soft:#17355A; --accent-soft-text:#CFE4FF;
+  --calc-bg:#153A63; --calc-line:#2A5586; --calc-ink:#FFFFFF;
+  --final-1:#0B4E7A; --final-2:#083A5C; --final-ink:#FFFFFF; --final-sub:#9BD0FF;
+  --slate-50:#12294A; --slate-100:#173254; --slate-200:#22456F; --slate-300:#2C5586;
+  --slate-400:#8FAACC; --slate-500:#A6BEDA; --slate-600:#C2D6EC;
+  --navy-900:#071627; --navy-800:#0E2A4B; --navy-700:#1D3F68;
+  --n-info-bg:#0E3350; --n-info-bd:#2A6A99; --n-info-tx:#CFE9FF;
+  --n-warn-bg:#3A2F12; --n-warn-bd:#87681B; --n-warn-tx:#FFDD9B;
+  --n-bad-bg:#3B1A24;  --n-bad-bd:#8C2E42;  --n-bad-tx:#FFC0CD;
+  --n-good-bg:#0D3A2E; --n-good-bd:#1F7A5C; --n-good-tx:#A8F0D2;
+  --opt-sel-bg:#153A63;
+  --emerald-light:#0D3A2E; --amber-light:#3A2F12; --rose-light:#3B1A24; --violet-light:#241E4A;
+  color-scheme:dark;
+}
+html[data-skin="navy"] #suite-root{
+  --bg:#0B1B33; --bg-2:#0E2244;
+  --panel:#12294A; --panel-2:#173254;
+  --ink:#FFFFFF; --ink-2:#E4EEFA; --muted:#B8CBE4; --line:#22456F; --line-2:#1B3A61;
+  --input-bg:#123A5E; --input-line:#2E6491; --input-ink:#FFFFFF; --input-focus:#7FC2FF;
+  --calc-bg:#153A63; --calc-line:#2A5586; --calc-ink:#FFFFFF;
+  --pass-bg:#0D3A2E; --pass-line:#1F7A5C; --pass-ink:#A8F0D2;
+  --final-bg:#0B4E7A; --final-bg-2:#083A5C; --final-ink:#FFFFFF; --final-sub:#9BD0FF;
+  --warn-bg:#3B1A24; --warn-line:#8C2E42; --warn-ink:#FFC0CD;
+  --amber-bg:#3A2F12; --amber-line:#87681B; --amber-ink:#FFDD9B;
+  --off-bg:#152C4B; --off-line:#20406A; --off-ink:#9FB6D2;
+  --accent:#4EA3FF; --accent-2:#7FC2FF; --accent-ink:#06182C;
+  --brand-1:#071627; --brand-2:#0E2A4B;
+  --major-1:#0E2A4B; --major-2:#164A78; --major-ink:#FFFFFF; --major-sub:#A9CCEE;
+  --subhead-bg:#17355A; --subhead-line:#254E7C; --subhead-ink:#CFE4FF;
+}
+html[data-skin="navy"] body{background:linear-gradient(180deg,#08152A,#0B1B33 320px) no-repeat #0B1B33;}
+html[data-skin="navy"] #suite-root{background:linear-gradient(180deg,#0E2244,#0B1B33 320px) no-repeat #0B1B33;}
+html[data-skin="navy"] body,html[data-skin="navy"] #suite-root{color:#FFFFFF}
+html[data-skin="navy"] p,html[data-skin="navy"] .sub,html[data-skin="navy"] small{color:#C7D9EF}
+
+/* ---------- 3. LEFT NAVIGATION -------------------------------------- */
+body{padding-left:var(--los-w)}
+#shellbar{padding-left:14px}
+#losnav{
+  position:fixed; top:0; left:0; bottom:0; width:var(--los-w); z-index:900;
+  background:var(--surface); border-right:1px solid var(--line);
+  display:flex; flex-direction:column; overflow:hidden;
+  font-family:var(--font-ui);
+}
+#losnav .los-brand{
+  display:flex; align-items:center; gap:9px; padding:13px 14px;
+  border-bottom:1px solid var(--line); flex:none;
+}
+#losnav .los-brand .m{
+  width:26px;height:26px;border-radius:7px;background:var(--accent);flex:none;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;
+}
+#losnav .los-brand b{font-size:14px;color:var(--text-strong);display:block;line-height:1.15}
+#losnav .los-brand small{font-size:9.5px;letter-spacing:.12em;color:var(--text-muted);font-weight:700}
+
+#losnav .los-scroll{flex:1; overflow-y:auto; padding:10px 8px 16px}
+#losnav .los-grp{margin-bottom:14px}
+#losnav .los-grp>.hd{
+  display:block;padding:0 8px 6px;font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--text-muted);font-weight:800;
+}
+#losnav .los-item{
+  display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+  padding:7px 9px;border-radius:7px;font-size:12.5px;font-weight:600;
+  color:var(--text);background:none;border:none;cursor:pointer;margin-bottom:1px;
+  font-family:var(--font-ui);
+}
+#losnav .los-item:hover{background:var(--surface-3)}
+#losnav .los-item.on{background:var(--accent-soft);color:var(--accent-soft-text)}
+#losnav .los-item .fig{
+  margin-left:auto;font-family:var(--font-num);font-size:10.5px;font-weight:700;
+  color:var(--text-muted);font-variant-numeric:tabular-nums;
+}
+#losnav .los-item.on .fig{color:var(--accent-soft-text)}
+#losnav .los-subs{padding:2px 0 6px 10px;margin-left:9px;border-left:1px solid var(--line-2);display:none}
+#losnav .los-subs.on{display:block}
+#losnav .los-sub{
+  display:block;width:100%;text-align:left;padding:5px 9px;border-radius:6px;
+  font-size:11.5px;font-weight:500;color:var(--text-muted);background:none;border:none;
+  cursor:pointer;font-family:var(--font-ui);
+}
+#losnav .los-sub:hover{background:var(--surface-3);color:var(--text)}
+#losnav .los-sub.on{color:var(--accent);font-weight:700;background:var(--accent-soft)}
+
+#losnav .los-foot{flex:none;border-top:1px solid var(--line);padding:10px 12px 12px}
+#losnav .los-lab{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);font-weight:800;display:block;margin-bottom:6px}
+#losnav .seg{display:flex;background:var(--surface-3);border-radius:8px;padding:2px;gap:2px;margin-bottom:10px}
+#losnav .seg button{
+  flex:1;padding:5px 2px;font-size:10.5px;font-weight:700;border-radius:6px;
+  color:var(--text-muted);background:none;border:none;cursor:pointer;font-family:var(--font-ui);
+}
+#losnav .seg button.on{background:var(--surface);color:var(--text-strong);box-shadow:var(--shadow-sm)}
+#losnav .los-sw{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:600;color:var(--text);margin-bottom:7px;cursor:pointer}
+#losnav .los-state{font-size:10px;color:var(--text-muted);line-height:1.5;font-family:var(--font-num)}
+#losnav .los-state b{color:var(--text-strong);font-weight:700}
+#losnav .dotlive{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--emerald);margin-right:5px}
+#losnav .dotlive.stale{background:var(--amber)}
+#losnav .dotlive.off{background:var(--slate-400)}
+
+/* the two original tab strips are replaced by the nav */
+/* both engines' horizontal tab rows are replaced by the left nav
+   and the in-page strip */
+#calc-root nav.tabbar,#calc-root .tabbar,#suite-root .tabs,#modeseg{display:none !important}
+
+/* subtab section filtering */
+.los-hidden{display:none !important}
+
+/* ---------- 4. SCENARIO WORKBENCH ----------------------------------- */
+#scenWrap{
+  position:fixed;right:0;top:0;bottom:0;width:520px;max-width:94vw;z-index:960;
+  background:var(--surface);border-left:1px solid var(--line);
+  box-shadow:-18px 0 48px rgba(0,0,0,.22);
+  transform:translateX(100%);transition:transform .22s ease;
+  display:flex;flex-direction:column;font-family:var(--font-ui);
+}
+#scenWrap.on{transform:none}
+#scenWrap .hd{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+#scenWrap .hd h3{margin:0;font-size:15px;color:var(--text-strong);flex:1}
+#scenWrap .bd{flex:1;overflow:auto;padding:14px 16px}
+#scenWrap .ft{flex:none;border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.scn-row{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--surface-2)}
+.scn-row.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.scn-row .t{display:flex;align-items:center;gap:8px}
+.scn-row .t b{font-size:13px;color:var(--text-strong);flex:1}
+.scn-row .meta{font-size:10.5px;color:var(--text-muted);margin-top:3px;font-family:var(--font-num)}
+.scn-row .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.scn-btn{font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px;border:1px solid var(--line-2);
+  background:var(--surface);color:var(--text);cursor:pointer;font-family:var(--font-ui)}
+.scn-btn:hover{background:var(--surface-3)}
+.scn-btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.scn-btn.dang{color:var(--rose);border-color:var(--rose)}
+table.scn-cmp{width:100%;border-collapse:collapse;font-size:12px}
+table.scn-cmp th,table.scn-cmp td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:right}
+table.scn-cmp th:first-child,table.scn-cmp td:first-child{text-align:left;font-weight:600}
+table.scn-cmp thead th{background:var(--surface-3);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+table.scn-cmp td:not(:first-child){font-family:var(--font-num);font-variant-numeric:tabular-nums}
+table.scn-cmp tr.best td{background:var(--n-good-bg);color:var(--n-good-tx)}
+table.scn-cmp tr.delta td{color:var(--text-muted);font-size:11px}
+.scn-name-in{width:100%;padding:7px 9px;border:1px solid var(--input-line);background:var(--input-bg);
+  color:var(--input-ink);border-radius:7px;font-size:12.5px;font-family:var(--font-ui)}
+#scenScrim{position:fixed;inset:0;background:rgba(6,14,28,.42);z-index:955;display:none}
+#scenScrim.on{display:block}
+
+/* ---------- 5. TOASTS / MI NOTICE ----------------------------------- */
+#losToast{
+  position:fixed;left:calc(var(--los-w) + 18px);bottom:18px;z-index:980;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none;
+}
+#losToast .t{
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:9px;padding:10px 14px;box-shadow:var(--shadow);font-size:12.5px;
+  color:var(--text);max-width:420px;animation:losIn .18s ease;
+}
+#losToast .t.warn{border-left-color:var(--amber)}
+#losToast .t.good{border-left-color:var(--emerald)}
+#losToast .t b{display:block;color:var(--text-strong);font-size:12.5px;margin-bottom:2px}
+#losToast .t .fig{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+@keyframes losIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#losToast .t{animation:none}#scenWrap{transition:none}}
+
+@media (max-width:1000px){
+  body{padding-left:0}
+  #losnav{transform:translateX(-100%);transition:transform .2s}
+  #losnav.open{transform:none}
+  #losToast{left:18px}
+  #losBurger{display:flex !important}
+}
+#losBurger{
+  display:none;position:fixed;left:12px;bottom:14px;z-index:940;
+  width:44px;height:44px;border-radius:12px;align-items:center;justify-content:center;
+  background:var(--accent);color:#fff;border:none;box-shadow:var(--shadow);cursor:pointer;font-size:18px;
+}
